@@ -1,69 +1,40 @@
 package com.example.proyectoServidor.model;
 
+import java.io.Serializable;
+import java.util.List;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-
+@Data
+@NoArgsConstructor
 @Entity
-public class Developer {
+@Table(name = "developers")
+public class Developer implements Serializable {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int devId;
+    @Column(name = "developer_id")
+    private Long developerId;
 
-    private String devName;
-    private String devSurname;
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "email")
     private String email;
-    private String linkedinUrl;
-    private String githubUrl;
 
-    // Getters y Setters
-    public int getDevId() {
-        return devId;
-    }
+    // Relación Many-to-Many con Project (un desarrollador puede trabajar en varios proyectos)
+    @ManyToMany(mappedBy = "developers")
+    private List<Project> projects;
 
-    public void setDevId(int devId) {
-        this.devId = devId;
-    }
-
-    public String getDevName() {
-        return devName;
-    }
-
-    public void setDevName(String devName) {
-        this.devName = devName;
-    }
-
-    public String getDevSurname() {
-        return devSurname;
-    }
-
-    public void setDevSurname(String devSurname) {
-        this.devSurname = devSurname;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getLinkedinUrl() {
-        return linkedinUrl;
-    }
-
-    public void setLinkedinUrl(String linkedinUrl) {
-        this.linkedinUrl = linkedinUrl;
-    }
-
-    public String getGithubUrl() {
-        return githubUrl;
-    }
-
-    public void setGithubUrl(String githubUrl) {
-        this.githubUrl = githubUrl;
-    }
+    // Relación Many-to-Many con Technology (un desarrollador puede usar varias tecnologías)
+    @ManyToMany(mappedBy = "developers")
+    private List<Technology> technologies;
 }
