@@ -1,11 +1,16 @@
 package com.example.proyectoServidor.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
-
 import com.example.proyectoServidor.model.Project;
 
-@Repository
-public interface ProjectRepository extends JpaRepository<Project, Long> {
-    
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+
+public interface ProjectRepository extends JpaRepository<Project, Integer> {
+    List<Project> findByProjectNameContaining(String word);
+
+    Page<Project> findAll(Pageable pageable);
 }
+

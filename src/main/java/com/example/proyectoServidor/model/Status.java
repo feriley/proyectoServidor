@@ -11,24 +11,38 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @Table(name = "status")
-public class Status implements Serializable {
+public class Status {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "status_id")
-    private Long statusId;
+    private Integer statusId;
 
-    @Column(name = "status_name")
+    @Column(name = "status_name", nullable = false, unique = true)
     private String statusName;
 
-    // Relación One-to-Many con Project (un estado puede estar asociado a varios proyectos)
-    @OneToMany(mappedBy = "status", cascade = CascadeType.ALL)
-    private List<Project> projects;
+    // Getters and setters
+    public Integer getStatusId() {
+        return statusId;
+    }
+
+    public void setStatusId(Integer statusId) {
+        this.statusId = statusId;
+    }
+
+    public String getStatusName() {
+        return statusName;
+    }
+
+    public void setStatusName(String statusName) {
+        this.statusName = statusName;
+    }
 }

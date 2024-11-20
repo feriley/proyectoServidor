@@ -9,6 +9,7 @@ import com.example.proyectoServidor.model.Status;
 
 
 @Repository
-public interface StatusRepository extends JpaRepository<Status, Long> {
+public interface StatusRepository extends JpaRepository<Status, Integer> {
     
 }
+// Accede y maneja la base de datos

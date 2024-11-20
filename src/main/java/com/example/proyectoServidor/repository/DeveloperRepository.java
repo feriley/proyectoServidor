@@ -6,7 +6,8 @@ import org.springframework.stereotype.Repository;
 import com.example.proyectoServidor.model.Developer;
 
 @Repository
-public interface DeveloperRepository extends JpaRepository<Developer, Long> {
+public interface DeveloperRepository extends JpaRepository<Developer, Integer> {
 
     
 }
+// Accede y maneja la base de datos
