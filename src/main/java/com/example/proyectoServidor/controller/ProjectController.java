@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@CrossOrigin(origins = "http://127.0.0.1:5500") // Añado CORS a los controladores 
-@RequestMapping("/api/projects")
+@CrossOrigin(origins = "http://localhost:4321/") // Permite todas las fuentes
+@RequestMapping("/api/v1/projects")
 public class ProjectController {
 
     @Autowired
@@ -33,7 +33,7 @@ public class ProjectController {
         return ResponseEntity.ok(projects);
     }
 
-    // 2) GET /projects/{word} -> Obtener proyectos que contengan la palabra "word" en su nombre
+    // 2) GET /projects/{word} -> Obtener proyectos que contengan la palabra escogida en su nombre
     @GetMapping("/{word}")
     public ResponseEntity<List<Project>> getProjectsByWord(@PathVariable("word") String word) {
         List<Project> projects = projectService.getProjectsByNameContaining(word);

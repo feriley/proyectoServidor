@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/statuses")
+@RequestMapping("/api/v1/statuses")
 @CrossOrigin(origins = "http://127.0.0.1:5500") // Añado CORS a los controladores
 public class StatusController {
 

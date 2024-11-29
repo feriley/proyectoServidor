@@ -10,7 +10,7 @@ import java.util.Optional;
 
 @RestController
 @CrossOrigin(origins = "http://127.0.0.1:5500") // Añado CORS a los controladores
-@RequestMapping("/api/technologies")
+@RequestMapping("/api/v1/technologies")
 public class TechnologyController {
 
     private final TechnologyService technologyService;

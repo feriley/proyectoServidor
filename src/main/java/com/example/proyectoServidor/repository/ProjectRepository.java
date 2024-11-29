@@ -10,7 +10,6 @@ import java.util.List;
 
 public interface ProjectRepository extends JpaRepository<Project, Integer> {
     List<Project> findByProjectNameContaining(String word);
-
     Page<Project> findAll(Pageable pageable);
 }
 

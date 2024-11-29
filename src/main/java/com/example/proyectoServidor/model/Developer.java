@@ -1,19 +1,16 @@
 package com.example.proyectoServidor.model;
 
-import java.io.Serializable;
-import java.util.List;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
-import jakarta.persistence.criteria.CriteriaBuilder.In;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -27,70 +24,27 @@ public class Developer {
     @Column(name = "dev_id")
     private Integer devId;
 
-    @Column(name = "dev_name")
+    @NotBlank(message = "Developer name is mandatory")
+    @Column(name = "dev_name", nullable = false)
     private String devName;
 
-    @Column(name = "dev_surname")
+    @NotBlank(message = "Developer surname is mandatory")
+    @Column(name = "dev_surname", nullable = false)
     private String devSurname;
 
-    @Column(name = "email", unique = true)
+    @Email(message = "Email should be valid")
+    @Column(name = "email", unique = true, nullable = false)
     private String email;
 
+    @Size(max = 200, message = "LinkedIn URL cannot exceed 200 characters")
     @Column(name = "linkedin_url", unique = true)
     private String linkedinUrl;
 
+    @Size(max = 200, message = "GitHub URL cannot exceed 200 characters")
     @Column(name = "github_url", unique = true)
     private String githubUrl;
 
     @ManyToMany(mappedBy = "developers")
+    @JsonBackReference  // Evita la recursión infinita
     private List<Project> projects;
-
-    // Getters and setters
-    public Integer getDevId() {
-        return devId;
-    }
-
-    public void setDevId(Integer devId) {
-        this.devId = devId;
-    }
-
-    public String getDevName() {
-        return devName;
-    }
-
-    public void setDevName(String devName) {
-        this.devName = devName;
-    }
-
-    public String getDevSurname() {
-        return devSurname;
-    }
-
-    public void setDevSurname(String devSurname) {
-        this.devSurname = devSurname;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getLinkedinUrl() {
-        return linkedinUrl;
-    }
-
-    public void setLinkedinUrl(String linkedinUrl) {
-        this.linkedinUrl = linkedinUrl;
-    }
-
-    public String getGithubUrl() {
-        return githubUrl;
-    }
-
-    public void setGithubUrl(String githubUrl) {
-        this.githubUrl = githubUrl;
-    }
 }

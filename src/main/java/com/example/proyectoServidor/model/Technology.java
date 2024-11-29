@@ -1,19 +1,14 @@
 package com.example.proyectoServidor.model;
 
-import java.io.Serializable;
-import java.util.List;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -31,22 +26,6 @@ public class Technology {
     private String techName;
 
     @ManyToMany(mappedBy = "technologies")
+    @JsonBackReference  // Evita la recursión infinita
     private List<Project> projects;
-
-    // Getters and setters
-    public Integer getTechId() {
-        return techId;
-    }
-
-    public void setTechId(Integer techId) {
-        this.techId = techId;
-    }
-
-    public String getTechName() {
-        return techName;
-    }
-
-    public void setTechName(String techName) {
-        this.techName = techName;
-    }
 }
