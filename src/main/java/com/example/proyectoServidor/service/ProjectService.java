@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ProjectService {
+    
     Page<Project> getAllProjects(Pageable pageable);
 
     List<ProjectDto> getProjectsByNameContaining(String word);
@@ -27,5 +28,10 @@ public interface ProjectService {
     void changeProjectStatusToTesting(Integer projectId);
 
     void changeProjectStatusToProduction(Integer projectId);
+
+    //Custom Query en el los servicios.
+
+    List<ProjectDto> findProjectsByTechnology(String techName);
+
 
 }

@@ -162,4 +162,19 @@ public class ProjectController {
         }
     }
 
+    @GetMapping("/tec/{tech}")
+    @Operation(summary = "Obtener proyectos por tecnología", description = "Busca proyectos asociados a una tecnología específica.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Proyectos encontrados con éxito"),
+            @ApiResponse(responseCode = "404", description = "No se encontraron proyectos para la tecnología proporcionada")
+    })
+    public ResponseEntity<GenericApiResponse<List<ProjectDto>>> getProjectsByTechnology(
+            @Parameter(description = "Nombre de la tecnología", example = "Java") @PathVariable("tech") String tech) {
+        List<ProjectDto> projects = projectService.findProjectsByTechnology(tech);
+        GenericApiResponse<List<ProjectDto>> response = new GenericApiResponse<>();
+        response.setMessage("Proyectos asociados a la tecnología: " + tech);
+        response.setContent(projects);
+        return ResponseEntity.ok(response);
+    }
+
 }

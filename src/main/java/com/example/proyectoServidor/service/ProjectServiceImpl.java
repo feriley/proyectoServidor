@@ -214,4 +214,15 @@ public class ProjectServiceImpl implements ProjectService {
         project.setStatus(productionStatus);
         projectRepository.save(project);
     }
+
+
+    // Implementamos el servicio de la customQuery(Convierto los proyectos en Dto's)
+    @Override
+    public List<ProjectDto> findProjectsByTechnology(String techName) {
+        List<Project> projects = projectRepository.findByTechnologyName(techName);
+        return projects.stream()
+                .map(this::castEntityToDto)
+                .collect(Collectors.toList());
+    }
+
 }
