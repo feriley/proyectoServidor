@@ -26,6 +26,6 @@ public class Technology {
     private String techName;
 
     @ManyToMany(mappedBy = "technologies")
-    @JsonBackReference  // Evita la recursión infinita
+    @JsonBackReference // Evita la recursión infinita
     private List<Project> projects;
 }

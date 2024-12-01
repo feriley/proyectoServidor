@@ -1,5 +1,7 @@
 package com.example.proyectoServidor.controller;
 
+import com.example.proyectoServidor.dto.GenericApiResponse;
+import com.example.proyectoServidor.dto.ProjectDto;
 import com.example.proyectoServidor.model.Project;
 import com.example.proyectoServidor.service.ProjectService;
 
@@ -12,71 +14,152 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import java.util.List;
-import java.util.Optional;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
+import java.util.List;
+
+/**
+ * Controlador para gestionar los endpoints relacionados con los proyectos.
+ */
 @RestController
-@CrossOrigin(origins = "http://localhost:4321/") // Permite todas las fuentes
 @RequestMapping("/api/v1/projects")
+@Tag(name = "Proyectos", description = "Gestión de proyectos en la aplicación")
 public class ProjectController {
 
     @Autowired
     private ProjectService projectService;
 
-    // 1) GET /projects -> Obtener todos los proyectos paginados
     @GetMapping
-    public ResponseEntity<Page<Project>> getAllProjects(
-            @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "size", defaultValue = "10") int size) {
+    @Operation(summary = "Obtener proyectos paginados", description = "Obtiene una lista de proyectos con soporte de paginación.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de proyectos obtenida con éxito")
+    })
+    public ResponseEntity<GenericApiResponse<Page<Project>>> getAllProjects(
+            @Parameter(description = "Número de la página a obtener", example = "0") @RequestParam(value = "page", defaultValue = "0") int page,
+            @Parameter(description = "Tamaño de la página a obtener", example = "10") @RequestParam(value = "size", defaultValue = "10") int size) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Project> projects = projectService.getAllProjects(pageable);
-        return ResponseEntity.ok(projects);
+
+        GenericApiResponse<Page<Project>> response = new GenericApiResponse<>();
+        response.setMessage("Proyectos obtenidos con éxito");
+        response.setContent(projects);
+
+        return ResponseEntity.ok(response);
     }
 
-    // 2) GET /projects/{word} -> Obtener proyectos que contengan la palabra escogida en su nombre
     @GetMapping("/{word}")
-    public ResponseEntity<List<Project>> getProjectsByWord(@PathVariable("word") String word) {
-        List<Project> projects = projectService.getProjectsByNameContaining(word);
-        return ResponseEntity.ok(projects);
+    @Operation(summary = "Buscar proyectos por palabra clave", description = "Obtiene los proyectos que contienen una palabra clave en su nombre.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Proyectos encontrados")
+    })
+    public ResponseEntity<GenericApiResponse<List<ProjectDto>>> getProjectsByWord(
+            @Parameter(description = "Palabra clave a buscar en los nombres de los proyectos", example = "API") @PathVariable("word") String word) {
+        List<ProjectDto> projects = projectService.getProjectsByNameContaining(word);
+
+        GenericApiResponse<List<ProjectDto>> response = new GenericApiResponse<>();
+        response.setMessage("Proyectos encontrados con éxito");
+        response.setContent(projects);
+
+        return ResponseEntity.ok(response);
     }
 
-    // 3) POST /projects -> Insertar un nuevo proyecto
     @PostMapping
-    public ResponseEntity<Project> createProject(@RequestBody Project project) {
-        // Validación básica
-        if (project.getProjectName() == null || project.getProjectName().isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
-        if (project.getDescription() == null || project.getDescription().isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
-
-        // Crear el proyecto si la validación pasa
-        Project createdProject = projectService.saveProject(project);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdProject);
-    }
-
-    // 4) PUT /projects/{id} -> Editar un proyecto existente
-    @PutMapping("/{id}")
-    public ResponseEntity<Project> updateProject(
-            @PathVariable("id") Integer id, @RequestBody Project project) {
+    @Operation(summary = "Crear un nuevo proyecto", description = "Crea un nuevo proyecto en el sistema.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Proyecto creado con éxito"),
+            @ApiResponse(responseCode = "400", description = "Datos enviados son inválidos")
+    })
+    public ResponseEntity<GenericApiResponse<Project>> createProject(@RequestBody ProjectDto projectDto) {
+        GenericApiResponse<Project> response = new GenericApiResponse<>();
         try {
-            Project updatedProject = projectService.updateProject(id, project);
-            return ResponseEntity.ok(updatedProject);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            Project createdProject = projectService.saveProject(projectDto);
+            response.setMessage("Proyecto creado exitosamente");
+            response.setContent(createdProject);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (IllegalArgumentException e) {
+            response.setMessage(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
     }
-    
 
-    // 5) DELETE /projects/{id} -> Eliminar un proyecto
+    @PutMapping("/{id}")
+    @Operation(summary = "Actualizar un proyecto", description = "Actualiza un proyecto existente.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Proyecto actualizado con éxito"),
+            @ApiResponse(responseCode = "400", description = "Datos enviados son inválidos")
+    })
+    public ResponseEntity<GenericApiResponse<Project>> updateProject(
+            @Parameter(description = "ID del proyecto a actualizar", example = "1") @PathVariable("id") Integer id,
+            @RequestBody ProjectDto projectDto) {
+        GenericApiResponse<Project> response = new GenericApiResponse<>();
+        try {
+            Project updatedProject = projectService.updateProject(id, projectDto);
+            response.setMessage("Proyecto actualizado con éxito");
+            response.setContent(updatedProject);
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            response.setMessage(e.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        }
+    }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProject(@PathVariable("id") Integer id) {
+    @Operation(summary = "Eliminar un proyecto", description = "Elimina un proyecto por su ID.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Proyecto eliminado con éxito"),
+            @ApiResponse(responseCode = "404", description = "Proyecto no encontrado")
+    })
+    public ResponseEntity<GenericApiResponse<Void>> deleteProject(
+            @Parameter(description = "ID del proyecto a eliminar", example = "1") @PathVariable("id") Integer id) {
+        GenericApiResponse<Void> response = new GenericApiResponse<>();
         try {
             projectService.deleteProject(id);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+            response.setMessage("Proyecto eliminado con éxito");
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            response.setMessage("Proyecto no encontrado");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
         }
     }
+
+    /**
+     * endpoints para cambiar el estado de los proyectos
+     */
+
+    @PatchMapping("/totesting/{id}")
+    @Operation(summary = "Cambiar proyecto a Testing", description = "Cambia el estado del proyecto a 'Testing'.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Estado cambiado con éxito"),
+            @ApiResponse(responseCode = "404", description = "Proyecto no encontrado")
+    })
+    public ResponseEntity<?> changeProjectToTesting(
+            @Parameter(description = "ID del proyecto a actualizar", example = "1") @PathVariable Integer id) {
+        try {
+            projectService.changeProjectStatusToTesting(id);
+            return ResponseEntity.ok("El proyecto se ha cambiado a estado 'Testing'.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @PatchMapping("/toprod/{id}")
+    @Operation(summary = "Cambiar proyecto a Production", description = "Cambia el estado del proyecto a 'Production'.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Estado cambiado con éxito"),
+            @ApiResponse(responseCode = "404", description = "Proyecto no encontrado")
+    })
+    public ResponseEntity<?> changeProjectToProduction(
+            @Parameter(description = "ID del proyecto a actualizar", example = "1") @PathVariable Integer id) {
+        try {
+            projectService.changeProjectStatusToProduction(id);
+            return ResponseEntity.ok("El proyecto se ha cambiado a estado 'Production'.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
 }

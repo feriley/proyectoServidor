@@ -7,7 +7,6 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import java.util.List;
@@ -44,7 +43,7 @@ public class Developer {
     @Column(name = "github_url", unique = true)
     private String githubUrl;
 
-    @ManyToMany(mappedBy = "developers")
-    @JsonBackReference  // Evita la recursión infinita
+    @ManyToMany(mappedBy = "developers") // La relación es mapeada por el lado de Project
+    @JsonBackReference // No se serializa esta relación desde Developer para evitar recursión
     private List<Project> projects;
 }

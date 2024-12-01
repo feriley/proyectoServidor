@@ -4,11 +4,14 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import com.fasterxml.jackson.annotation.JsonManagedReference;  // Asegúrate de importar esta clase
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * Entidad que representa un proyecto en la base de datos.
+ */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -42,25 +45,17 @@ public class Project {
     @Column(name = "picture")
     private String picture;
 
-    @ManyToOne(fetch = FetchType.EAGER)  // Asegúrate de tener el FetchType correcto
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "status_status_id", nullable = false)
     private Status status;
 
     @ManyToMany
-    @JoinTable(
-        name = "technologies_used_in_projects",
-        joinColumns = @JoinColumn(name = "projects_project_id"),
-        inverseJoinColumns = @JoinColumn(name = "technologies_tech_id")
-    )
-    @JsonManagedReference  // Maneja la serialización de esta relación
+    @JoinTable(name = "technologies_used_in_projects", joinColumns = @JoinColumn(name = "projects_project_id"), inverseJoinColumns = @JoinColumn(name = "technologies_tech_id"))
+    @JsonManagedReference
     private List<Technology> technologies;
 
     @ManyToMany
-    @JoinTable(
-        name = "developers_worked_on_projects",
-        joinColumns = @JoinColumn(name = "projects_project_id"),
-        inverseJoinColumns = @JoinColumn(name = "developers_dev_id")
-    )
-    @JsonManagedReference  // Maneja la serialización de esta relación
+    @JoinTable(name = "developers_worked_on_projects", joinColumns = @JoinColumn(name = "projects_project_id"), inverseJoinColumns = @JoinColumn(name = "developers_dev_id"))
+    @JsonManagedReference
     private List<Developer> developers;
 }

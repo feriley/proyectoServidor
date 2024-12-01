@@ -8,6 +8,5 @@ import com.example.proyectoServidor.model.Technology;
 @Repository
 public interface TechnologyRepository extends JpaRepository<Technology, Integer> {
 
-    
-} 
+}
 // Accede y maneja la base de datos

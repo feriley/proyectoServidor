@@ -9,9 +9,11 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        // Permite solicitudes desde http://localhost:4321 
-        registry.addMapping("/api/**")  
-                .allowedOrigins("http://localhost:4321") // Cambiado a la URL de tu front-end de Astro
-                .allowedMethods("GET", "POST", "PUT", "DELETE"); // Métodos HTTP permitidos
+        registry.addMapping("/**") // Permitir todas las rutas
+                .allowedOrigins("http://localhost:4321") // Permitir el frontend
+                .allowedMethods("*") // Permitir todos los métodos HTTP
+                .allowedHeaders("*") // Permitir todas las cabeceras
+                .allowCredentials(true); // Permitir credenciales si es necesario
     }
+
 }
